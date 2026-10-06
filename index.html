@@ -7,10 +7,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Pizarra de formación - Fútbol 11</title>
 <style>
-:root{--bg:#F4F4EF;--card:#FFFFFF;--ink:#1F2A1A;--ink2:#5C6656;--line:#D9DCD2;--accent:#27500A;--accent-ink:#FFFFFF;--pitch:#3B6D11;--chalk:#EAF3DE;
+:root{--bg:#F4F4EF;--card:#FFFFFF;--ink:#1F2A1A;--ink2:#5C6656;--line:#D9DCD2;--accent:#27500A;--accent-ink:#FFFFFF;--pitch:#2E5A12;--chalk:#EAF3DE;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15190F;--card:#1E2418;--ink:#EEF2E6;--ink2:#A7B09B;--line:#33402A;--accent:#97C459;--accent-ink:#173404;--pitch:#2C5410}}
-:root[data-theme="dark"]{--bg:#15190F;--card:#1E2418;--ink:#EEF2E6;--ink2:#A7B09B;--line:#33402A;--accent:#97C459;--accent-ink:#173404;--pitch:#2C5410}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15190F;--card:#1E2418;--ink:#EEF2E6;--ink2:#A7B09B;--line:#3A4730;--accent:#97C459;--accent-ink:#173404;--pitch:#234510}}
+:root[data-theme="dark"]{--bg:#15190F;--card:#1E2418;--ink:#EEF2E6;--ink2:#A7B09B;--line:#3A4730;--accent:#97C459;--accent-ink:#173404;--pitch:#234510}
 html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
 *{box-sizing:border-box}
 body{margin:0;height:100%;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Barlow Condensed","Arial Narrow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.3}
@@ -18,20 +18,15 @@ body{margin:0;height:100%;display:flex;flex-direction:column;overflow:hidden;bac
 .bar.bottom{border-bottom:0;border-top:1px solid var(--line)}
 input,select,button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;height:44px;padding:0 10px;min-width:0}
 input{flex:1}
-select{flex:none;width:104px}
+select{flex:none;width:100px}
 button{cursor:pointer;background:var(--card);flex:none}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #team{font-weight:600;font-size:19px;border-color:transparent;background:transparent;padding:0 4px}
-#settings{display:none;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--line);flex:none}
-#settings.open{display:flex}
-#settings span{font-size:15px;color:var(--ink2)}
-.sw{width:44px;height:44px;border-radius:50%;padding:0}
-.sw.on{outline:3px solid var(--accent);outline-offset:2px}
 #stage{flex:1;min-height:0;padding:6px}
 #pitch{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
 .pl{cursor:grab}
-#hint{font-size:15px;color:var(--ink2);padding:0 4px}
+#hint{flex:1;font-size:15px;color:var(--ink2);line-height:1.25}
 #edit{display:none;gap:8px;align-items:center;width:100%}
 #edit.open{display:flex}
 </style>
@@ -40,17 +35,12 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 <div class="bar">
 <input id="team" type="text" value="Mi equipo" maxlength="28" aria-label="Nombre del equipo">
 <select id="form" aria-label="Formación"><option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>3-5-2</option><option>3-4-3</option><option>5-3-2</option></select>
-<button id="cfg" type="button" aria-expanded="false">Ajustes</button>
-</div>
-<div id="settings">
-<span>Camiseta</span>
-<div id="colors" style="display:flex;gap:10px"></div>
-<button id="reset" type="button">Reiniciar posiciones</button>
+<button id="share" type="button" class="primary">Compartir</button>
 </div>
 <div id="stage">
-<svg id="pitch" viewBox="0 0 340 480" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Campo de fútbol con la formación del equipo">
-<rect id="bg" x="0" y="0" width="340" height="480" rx="10" fill="var(--pitch)"/>
-<g fill="none" stroke="var(--chalk)" stroke-width="1.5" opacity="0.8" pointer-events="none">
+<svg id="pitch" viewBox="0 0 340 580" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Campo de fútbol con la formación del equipo y la banca de suplentes">
+<rect x="0" y="0" width="340" height="480" rx="10" style="fill:var(--pitch)"/>
+<g fill="none" stroke-width="1.5" opacity="0.8" pointer-events="none" style="stroke:var(--chalk)">
 <rect x="10" y="10" width="320" height="460"/>
 <line x1="10" y1="240" x2="330" y2="240"/>
 <circle cx="170" cy="240" r="40"/>
@@ -61,11 +51,15 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 <path d="M135 82 A40 40 0 0 0 205 82"/>
 <path d="M135 398 A40 40 0 0 1 205 398"/>
 </g>
+<rect x="0" y="490" width="340" height="90" rx="10" stroke-width="1" style="fill:var(--card);stroke:var(--line)"/>
+<text x="10" y="506" font-size="12" font-weight="600" style="fill:var(--ink2)">Banca</text>
+<g id="slots"></g>
 <g id="pl"></g>
 </svg>
 </div>
 <div class="bar bottom">
-<span id="hint">Arrastra a un jugador para moverlo. Tócalo para editarlo.</span>
+<span id="hint"></span>
+<button id="reset" type="button">Reiniciar</button>
 <div id="edit">
 <input id="ppos" type="text" maxlength="4" placeholder="Pos." style="flex:none;width:72px;text-transform:uppercase" aria-label="Posición">
 <input id="pname" type="text" placeholder="Nombre (opcional)" maxlength="14" aria-label="Nombre del jugador">
@@ -74,50 +68,76 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 </div>
 <script>
 var F={'4-4-2':[4,4,2],'4-3-3':[4,3,3],'4-2-3-1':[4,2,3,1],'3-5-2':[3,5,2],'3-4-3':[3,4,3],'5-3-2':[5,3,2]};
-var C=[['#E24B4A','#FFFFFF'],['#185FA5','#FFFFFF'],['#F1EFE8','#2C2C2A'],['#0F6E56','#FFFFFF']];
-var GK=['#534AB7','#FFFFFF'];
+var GREEN=['#97C459','#173404'],BLUE=['#185FA5','#FFFFFF'],BLACK=['#1A1A1A','#FFFFFF'];
 var NS='http://www.w3.org/2000/svg';
-var KEY='pizarra-futbol-11-v2';
+var KEY='pizarra-futbol-11-v3';
+var BENCH_Y=536,FIELD_MAX=450,BENCH_TOP=488;
+var SUBS=['POR','DFC','LD','MC','MCO','EI','DC'];
+var HINT='Arrastra a un jugador para moverlo. Los suplentes de la banca entran arrastrándolos a la cancha.';
 var POS={d:{3:['DFC','DFC','DFC'],4:['LI','DFC','DFC','LD'],5:['LI','DFC','DFC','DFC','LD']},m:{2:['MCD','MCD'],3:['MC','MC','MC'],4:['MI','MC','MC','MD'],5:['MI','MC','MC','MC','MD']},f:{1:['DC'],2:['DC','DC'],3:['EI','DC','ED']}};
-var svg=document.getElementById('pitch'),layer=document.getElementById('pl');
-var S={form:'4-4-2',col:0,team:'Mi equipo',P:[]};
-var selId=-1;
-function save(){
-try{
-var data={form:S.form,col:S.col,team:S.team,P:S.P.map(function(p){return{id:p.id,pos:p.pos,name:p.name,x:p.x,y:p.y,gk:!!p.gk}})};
-localStorage.setItem(KEY,JSON.stringify(data));
-}catch(e){}
+var svg=document.getElementById('pitch'),layer=document.getElementById('pl'),hint=document.getElementById('hint');
+var S={form:'4-4-2',team:'Mi equipo',P:[]};
+var selId=-1,hintTimer=null;
+
+function colorOf(p){return p.slot>=0?BLACK:(/^\s*POR\s*$/i.test(p.pos)?BLUE:GREEN)}
+function slotXY(i){return{x:Math.round(340*(i+0.5)/7),y:BENCH_Y}}
+function snap(){S.P.forEach(function(p){if(p.slot>=0){var s=slotXY(p.slot);p.x=s.x;p.y=s.y}})}
+
+function encode(){
+var o={t:S.team,f:S.form,p:S.P.map(function(p){return[p.pos,p.name,Math.round(p.x),Math.round(p.y),p.slot]})};
+var s=btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+return s.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
-function load(){
+function decode(c){
 try{
-var raw=localStorage.getItem(KEY);
-if(!raw)return false;
-var d=JSON.parse(raw);
-if(!d||!F[d.form]||!d.P||d.P.length!==11||typeof d.P[0].pos!=='string')return false;
-S.form=d.form;S.col=Math.max(0,Math.min(C.length-1,d.col|0));S.team=String(d.team||'Mi equipo');S.P=d.P;
+c=c.replace(/-/g,'+').replace(/_/g,'/');
+while(c.length%4)c+='=';
+var o=JSON.parse(decodeURIComponent(escape(atob(c))));
+if(!o||!F[o.f]||!Array.isArray(o.p)||o.p.length!==18)return false;
+var P=[];
+for(var i=0;i<18;i++){
+var q=o.p[i];
+if(!Array.isArray(q)||typeof q[0]!=='string'||typeof q[2]!=='number'||typeof q[3]!=='number'||q[4]!==(q[4]|0)||q[4]<-1||q[4]>6)return false;
+P.push({id:i,pos:q[0].slice(0,4),name:String(q[1]||'').slice(0,14),x:q[2],y:q[3],slot:q[4]});
+}
+S.form=o.f;S.team=String(o.t||'Mi equipo').slice(0,28);S.P=P;
+snap();
 return true;
 }catch(e){return false}
 }
+function save(){try{localStorage.setItem(KEY,encode())}catch(e){}}
+function load(){
+try{
+if(location.hash.indexOf('#f=')===0&&decode(location.hash.slice(3))){
+save();
+try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+return true;
+}
+var raw=localStorage.getItem(KEY);
+return raw?decode(raw):false;
+}catch(e){return false}
+}
 function build(f){
-var L=F[f],n=1;
+var L=F[f],n=0;
 S.form=f;
-S.P=[{id:0,pos:'POR',name:'',x:170,y:438,gk:true}];
+S.P=[{id:n++,pos:'POR',name:'',x:170,y:438,slot:-1}];
 for(var i=0;i<L.length;i++){
 var y=L.length===1?250:370-(280*i/(L.length-1));
 var k=i===0?'d':(i===L.length-1?'f':'m');
 var names=(f==='4-2-3-1'&&i===2)?['EI','MCO','ED']:POS[k][L[i]];
 for(var j=0;j<L[i];j++){
-n++;
-S.P.push({id:n-1,pos:names[j],name:'',x:Math.round(340*(j+1)/(L[i]+1)),y:Math.round(y)});
+S.P.push({id:n++,pos:names[j],name:'',x:Math.round(340*(j+1)/(L[i]+1)),y:Math.round(y),slot:-1});
 }
 }
+for(var s=0;s<7;s++){S.P.push({id:n++,pos:SUBS[s],name:'',x:0,y:0,slot:s})}
+snap();
 selId=-1;
 }
 function el(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e}
 function render(){
 layer.innerHTML='';
 S.P.forEach(function(p){
-var c=p.gk?GK:C[S.col];
+var c=colorOf(p);
 var g=el('g',{'class':'pl','transform':'translate('+Math.round(p.x)+','+Math.round(p.y)+')'});
 var ring=el('circle',{r:21,fill:'none',stroke:'#FFFFFF','stroke-width':3,opacity:p.id===selId?1:0});
 var ci=el('circle',{r:18,fill:c[0],stroke:'#FFFFFF','stroke-width':1.5});
@@ -131,6 +151,7 @@ bind(g,p);
 layer.appendChild(g);
 });
 }
+function paint(p){var c=colorOf(p);p.ci.setAttribute('fill',c[0]);p.tx.setAttribute('fill',c[1])}
 function pt(e){
 var m=svg.createSVGPoint();m.x=e.clientX;m.y=e.clientY;
 return m.matrixTransform(svg.getScreenCTM().inverse());
@@ -140,17 +161,57 @@ selId=id;
 S.P.forEach(function(o){if(o.ring)o.ring.setAttribute('opacity',o.id===selId?1:0)});
 showSel();
 }
+function benchAt(i,except){return S.P.filter(function(o){return o.slot===i&&o!==except})[0]}
+function freeSlot(near,except){
+for(var d=0;d<7;d++){
+if(near-d>=0&&!benchAt(near-d,except))return near-d;
+if(near+d<=6&&!benchAt(near+d,except))return near+d;
+}
+return -1;
+}
+function place(p){
+if(p.y>BENCH_TOP){
+var s=Math.max(0,Math.min(6,Math.floor(p.x/(340/7))));
+var occ=benchAt(s,p);
+if(p.slot>=0){
+if(occ)occ.slot=p.slot;
+p.slot=s;
+}else if(occ){
+var f=freeSlot(s,p);
+if(f>=0){p.slot=f}
+else{occ.slot=-1;occ.x=p.ox;occ.y=p.oy;p.slot=s}
+}else{p.slot=s}
+}else{
+var y=Math.min(p.y,FIELD_MAX);
+if(p.slot>=0){
+var other=null,best=26;
+S.P.forEach(function(o){
+if(o===p||o.slot>=0)return;
+var d=Math.sqrt((o.x-p.x)*(o.x-p.x)+(o.y-y)*(o.y-y));
+if(d<best){best=d;other=o}
+});
+var old=p.slot;
+if(other){p.x=other.x;p.y=other.y;other.slot=old}
+else{p.y=y}
+p.slot=-1;
+}else{p.y=y}
+}
+p.x=Math.round(p.x);p.y=Math.round(p.y);
+snap();
+}
 function bind(g,p){
 var drag=false,moved=0,sx=0,sy=0;
 g.addEventListener('pointerdown',function(e){
 drag=true;moved=0;var q=pt(e);sx=q.x-p.x;sy=q.y-p.y;
+p.ox=p.x;p.oy=p.y;
+layer.appendChild(g);
 try{g.setPointerCapture(e.pointerId)}catch(err){}
 e.preventDefault();e.stopPropagation();
 });
 g.addEventListener('pointermove',function(e){
 if(!drag)return;
 var q=pt(e);
-var nx=Math.max(22,Math.min(318,q.x-sx)),ny=Math.max(22,Math.min(450,q.y-sy));
+var nx=Math.max(22,Math.min(318,q.x-sx)),ny=Math.max(22,Math.min(548,q.y-sy));
 moved+=Math.abs(nx-p.x)+Math.abs(ny-p.y);
 p.x=nx;p.y=ny;
 g.setAttribute('transform','translate('+Math.round(nx)+','+Math.round(ny)+')');
@@ -158,26 +219,48 @@ g.setAttribute('transform','translate('+Math.round(nx)+','+Math.round(ny)+')');
 g.addEventListener('pointerup',function(){
 if(!drag)return;
 drag=false;
-if(moved<6){select(p.id)}
-else{p.x=Math.round(p.x);p.y=Math.round(p.y);save();}
+if(moved<6){
+p.x=p.ox;p.y=p.oy;
+g.setAttribute('transform','translate('+Math.round(p.x)+','+Math.round(p.y)+')');
+select(p.id);
+}else{
+place(p);render();save();
+}
 });
-g.addEventListener('pointercancel',function(){drag=false});
+g.addEventListener('pointercancel',function(){drag=false;p.x=p.ox;p.y=p.oy;render()});
 }
 function selected(){return S.P.filter(function(o){return o.id===selId})[0]}
 function showSel(){
-var p=selected(),ed=document.getElementById('edit'),h=document.getElementById('hint');
-if(!p){ed.className='';h.style.display='';return}
-h.style.display='none';ed.className='open';
+var p=selected(),ed=document.getElementById('edit'),rs=document.getElementById('reset');
+if(!p){ed.className='';hint.style.display='';rs.style.display='';return}
+hint.style.display='none';rs.style.display='none';ed.className='open';
 document.getElementById('pname').value=p.name;
 document.getElementById('ppos').value=p.pos;
 }
-document.getElementById('bg').addEventListener('pointerdown',function(){select(-1)});
+function msg(t){
+hint.textContent=t;
+clearTimeout(hintTimer);
+hintTimer=setTimeout(function(){hint.textContent=HINT},2500);
+}
+function link(){return location.href.split('#')[0]+'#f='+encode()}
+function copyText(u){
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(u).then(function(){msg('Enlace copiado')},function(){window.prompt('Copia este enlace',u)});
+}else{window.prompt('Copia este enlace',u)}
+}
+function shareLink(){
+var u=link();
+if(navigator.share){
+navigator.share({title:S.team||'Pizarra',url:u}).catch(function(e){if(!e||e.name!=='AbortError')copyText(u)});
+}else{copyText(u)}
+}
+svg.addEventListener('pointerdown',function(){select(-1)});
 document.getElementById('done').addEventListener('click',function(){select(-1)});
 document.getElementById('pname').addEventListener('input',function(e){
 var p=selected();if(!p)return;p.name=e.target.value;p.nm.textContent=p.name;save();
 });
 document.getElementById('ppos').addEventListener('input',function(e){
-var p=selected();if(!p)return;p.pos=e.target.value.toUpperCase();p.tx.textContent=p.pos;save();
+var p=selected();if(!p)return;p.pos=e.target.value.toUpperCase();p.tx.textContent=p.pos;paint(p);save();
 });
 document.getElementById('team').addEventListener('input',function(e){
 S.team=e.target.value;document.title=(S.team||'Pizarra')+' - Fútbol 11';save();
@@ -185,32 +268,29 @@ S.team=e.target.value;document.title=(S.team||'Pizarra')+' - Fútbol 11';save();
 document.getElementById('form').addEventListener('change',function(e){
 build(e.target.value);render();showSel();save();
 });
-document.getElementById('reset').addEventListener('click',function(){
-build(document.getElementById('form').value);render();showSel();save();
-});
-document.getElementById('cfg').addEventListener('click',function(){
-var s=document.getElementById('settings'),o=s.className==='open';
-s.className=o?'':'open';this.setAttribute('aria-expanded',o?'false':'true');
-});
-var cd=document.getElementById('colors');
-function paintSwatches(){
-[].forEach.call(cd.querySelectorAll('.sw'),function(x,k){x.className='sw'+(k===S.col?' on':'')});
+document.getElementById('share').addEventListener('click',shareLink);
+var rt=null,rb=document.getElementById('reset');
+rb.addEventListener('click',function(){
+if(rt){
+clearTimeout(rt);rt=null;rb.textContent='Reiniciar';
+build(document.getElementById('form').value);render();showSel();save();msg('Formación reiniciada');
+}else{
+rb.textContent='¿Seguro?';
+rt=setTimeout(function(){rt=null;rb.textContent='Reiniciar'},3000);
 }
-C.forEach(function(c,i){
-var b=document.createElement('button');
-b.type='button';b.className='sw';b.style.background=c[0];b.setAttribute('aria-label','Color de camiseta '+(i+1));
-b.addEventListener('click',function(){
-S.col=i;paintSwatches();
-S.P.forEach(function(p){if(!p.gk){p.ci.setAttribute('fill',c[0]);p.tx.setAttribute('fill',c[1])}});
-save();
 });
-cd.appendChild(b);
-});
+(function(){
+var g=document.getElementById('slots');
+for(var i=0;i<7;i++){
+var s=slotXY(i);
+g.appendChild(el('circle',{cx:s.x,cy:s.y,r:20,fill:'none','stroke-width':1,'stroke-dasharray':'3 3',style:'stroke:var(--line)'}));
+}
+})();
 if(!load()){build('4-4-2')}
 document.getElementById('form').value=S.form;
 document.getElementById('team').value=S.team;
 document.title=(S.team||'Pizarra')+' - Fútbol 11';
-paintSwatches();
+hint.textContent=HINT;
 render();
 showSel();
 </script>
